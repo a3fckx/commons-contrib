@@ -1,6 +1,6 @@
 # commons-contrib
 
-.PHONY: build test run-bounty run-sourcekind run-sim-verifier run-benchmark run-pipeline run-conversation clean
+.PHONY: build test run-bounty run-sourcekind run-sim-verifier run-benchmark run-pipeline run-conversation run-skill-router clean
 
 build:
 	go build ./cmd/bounty-scout
@@ -9,6 +9,7 @@ build:
 	go build ./cmd/benchmark-run
 	go build ./cmd/pipeline-run
 	go build ./cmd/conversation-loop
+	go build ./cmd/skill-router
 
 test:
 	go vet ./...
@@ -32,5 +33,8 @@ run-pipeline:
 run-conversation:
 	go run ./cmd/conversation-loop
 
+run-skill-router:
+	go run ./cmd/skill-router
+
 clean:
-	rm -f bounty-scout sourcekind-persona sim-verifier benchmark-run pipeline-run conversation-loop
+	rm -f bounty-scout sourcekind-persona sim-verifier benchmark-run pipeline-run conversation-loop skill-router

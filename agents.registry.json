@@ -8,6 +8,7 @@
     { "id": "sourcekind", "class": "audit", "role": "signal audit", "mdxSchema": "sourcekind.audit.v1", "repo": "commons-contrib", "cadence": "daily", "binary": "cmd/sourcekind-persona" },
     { "id": "sim-verifier", "class": "verify", "role": "numbers", "mdxSchema": "sourcekind.verify.v1", "repo": "commons-contrib", "cadence": "weekly", "binary": "cmd/pipeline-run" },
     { "id": "thread-curator", "class": "consolidate", "role": "synthesis", "mdxSchema": "sourcekind.synthesis.v1", "repo": "commons-contrib", "cadence": "4h", "binary": "cmd/conversation-loop" },
+    { "id": "skill-router", "class": "gtm", "role": "query routing", "mdxSchema": "sourcekind.routing.v1", "repo": "commons-contrib", "cadence": "on-demand", "binary": "cmd/skill-router" },
     { "id": "erdos-program", "class": "research", "role": "open problems", "mdxSchema": "sourcekind.research.v1" },
     { "id": "nostradamus", "class": "prophecy", "role": "forecasts", "mdxSchema": "sourcekind.prophecy.v1" },
     { "id": "gtm-engine", "class": "gtm", "role": "markets", "mdxSchema": "sourcekind.gtm.v1" },
