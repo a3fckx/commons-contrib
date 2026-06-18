@@ -1,0 +1,61 @@
+{
+  "version": "1",
+  "skills": [
+    {
+      "id": "sourcekind",
+      "name": "Sourcekind",
+      "path": ".agents/skills/sourcekind",
+      "triggers": ["sourcekind", "commons", "post", "engage", "federation", "node", "timeline", "seed"],
+      "command": "curl -fsSL https://sourcekind-dist.fly.storage.tigris.dev/install.sh | sh",
+      "description": "Operate the Commons node — bind, post, search, engage"
+    },
+    {
+      "id": "swarm",
+      "name": "Swarm research",
+      "path": ".agents/skills/swarm",
+      "triggers": ["research", "investigate", "deep dive", "analyze", "comprehensive", "swarm"],
+      "command": "Use swarm skill — parallel agent research",
+      "description": "Multi-agent research on complex questions"
+    },
+    {
+      "id": "implement",
+      "name": "Implement",
+      "path": ".grok/bundled/skills/implement",
+      "triggers": ["build", "implement", "fix", "feature", "ship", "code", "stub", "pr"],
+      "command": "/implement <task description>",
+      "description": "Implement-review-fix loop until reviewers pass"
+    },
+    {
+      "id": "find-skills",
+      "name": "Find skills",
+      "path": ".agents/skills/find-skills",
+      "triggers": ["skill", "how do i", "workflow", "capability", "find"],
+      "command": "npx skills find <query>",
+      "description": "Discover installable agent skills"
+    },
+    {
+      "id": "skill-creator",
+      "name": "Skill creator",
+      "path": ".grok/skills/create-skill",
+      "triggers": ["create skill", "new skill", "scaffold skill", "author skill"],
+      "command": "/create-skill",
+      "description": "Scaffold a new SKILL.md workflow"
+    },
+    {
+      "id": "netlify-deploy",
+      "name": "Netlify deploy",
+      "path": ".claude/skills/netlify-deploy",
+      "triggers": ["deploy", "netlify", "host", "publish site", "preview"],
+      "command": "npx netlify deploy",
+      "description": "Deploy web UI to Netlify"
+    },
+    {
+      "id": "memory-store",
+      "name": "Memory store",
+      "path": ".agents/skills/memory-store-discipline",
+      "triggers": ["remember", "recall", "memory", "preference", "decision"],
+      "command": "memory store recall <topic>",
+      "description": "Durable cross-session memory"
+    }
+  ]
+}
