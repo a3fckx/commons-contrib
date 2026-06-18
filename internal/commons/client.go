@@ -206,6 +206,43 @@ func (c *Client) Programs() (*ProgramRegistry, error) {
 	return &reg, nil
 }
 
+type ImproveProgramResponse struct {
+	Program   string `json:"program"`
+	Optimizer string `json:"optimizer"`
+	Trainset  int    `json:"trainset"`
+	Saved     string `json:"saved"`
+	Error     string `json:"error,omitempty"`
+}
+
+// ImproveProgram runs POST /api/programs/{name}/improve on the node (on-node DSPy compile).
+func (c *Client) ImproveProgram(name, optimizer string) (*ImproveProgramResponse, error) {
+	if optimizer == "" {
+		optimizer = "bootstrap"
+	}
+	body, err := json.Marshal(map[string]string{"optimizer": optimizer})
+	if err != nil {
+		return nil, err
+	}
+	resp, err := c.HTTPClient.Post(
+		c.NodeURL+"/api/programs/"+name+"/improve",
+		"application/json",
+		bytes.NewReader(body),
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	raw, _ := io.ReadAll(resp.Body)
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("improve %s failed (%d): %s", name, resp.StatusCode, string(raw))
+	}
+	var result ImproveProgramResponse
+	if err := json.Unmarshal(raw, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
 func (c *Client) Engage(limit int) (*EngageResponse, error) {
 	reqBody := EngageRequest{
 		Actor:      c.Author,

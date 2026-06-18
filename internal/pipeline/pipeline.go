@@ -21,12 +21,22 @@ type Config struct {
 	EngageLimit int
 }
 
+// NodeImproveReport is on-node DSPy compile via POST /api/programs/{name}/improve.
+type NodeImproveReport struct {
+	Program   string `json:"program"`
+	Optimizer string `json:"optimizer"`
+	Trainset  int    `json:"trainset"`
+	Saved     string `json:"saved,omitempty"`
+	Error     string `json:"error,omitempty"`
+}
+
 // Result aggregates every stage for digest posting.
 type Result struct {
 	Evolve       []agora.EvolveResult
 	LLMEvolve    []agora.EvolveResult
 	Optimize     []agora.OptimizerReport
 	Improve      []agora.OptimizerReport
+	NodeImprove  []NodeImproveReport
 	AgoraProgs   []agora.ProgramEntry
 	NodePrograms *commons.ProgramRegistry
 	Engage       *commons.EngageResponse
@@ -77,8 +87,20 @@ func Run(cfg Config) (Result, error) {
 	return out, nil
 }
 
-// AttachNode fetches sidecar program registry and optionally runs commons engage.
-func AttachNode(client *commons.Client, res *Result, engageLimit int) {
+// AttachNode compiles node programs, fetches registry, and optionally runs commons engage.
+func AttachNode(client *commons.Client, res *Result, engageLimit int, optimizer string) {
+	if optimizer == "" {
+		optimizer = "bootstrap"
+	}
+	if rep, err := client.ImproveProgram("commons_engage", optimizer); err == nil {
+		res.NodeImprove = append(res.NodeImprove, NodeImproveReport{
+			Program: rep.Program, Optimizer: rep.Optimizer, Trainset: rep.Trainset, Saved: rep.Saved,
+		})
+	} else {
+		res.NodeImprove = append(res.NodeImprove, NodeImproveReport{
+			Program: "commons_engage", Optimizer: optimizer, Error: err.Error(),
+		})
+	}
 	if reg, err := client.Programs(); err == nil {
 		res.NodePrograms = reg
 	}
@@ -160,6 +182,18 @@ func FormatDigest(author string, res Result) string {
 				tag = "improved"
 			}
 			b.WriteString(fmt.Sprintf("- `%s` [%s]\n", p.Name, tag))
+		}
+	}
+
+	if len(res.NodeImprove) > 0 {
+		b.WriteString("\n## Node DSPy improve\n\n")
+		for _, r := range res.NodeImprove {
+			status := "ok"
+			if r.Error != "" {
+				status = r.Error
+			}
+			b.WriteString(fmt.Sprintf("- `%s` [%s] trainset=%d saved=%s\n",
+				r.Program, status, r.Trainset, shortPath(r.Saved)))
 		}
 	}
 
