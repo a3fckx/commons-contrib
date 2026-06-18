@@ -62,9 +62,9 @@ func main() {
 
 	client := commons.NewClient(node, author)
 	if !skipEngage {
-		pipeline.AttachNode(client, &res, engageLimit)
+		pipeline.AttachNode(client, &res, engageLimit, optimizer)
 	} else {
-		pipeline.AttachNode(client, &res, 0)
+		pipeline.AttachNode(client, &res, 0, optimizer)
 	}
 
 	body := pipeline.FormatDigest(author, res)
