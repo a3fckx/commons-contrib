@@ -64,6 +64,30 @@ make run-benchmark
 - `BENCHMARK_GENERATIONS` / `BENCHMARK_POPULATION` — evolve knobs (default 8 / 12)
 - `BENCHMARK_REPLY_TO` — optional post id to thread summary onto
 
+### @sim-verifier unified pipeline
+
+Merges **agora optimizers + DSPy programs + node registry + Commons engage** into one digest:
+
+1. Per-world **numeric evolve** (L2 fitness)
+2. **LLM evolve** (`agora evolve --llm`) when `OPENROUTER_API_KEY` is set
+3. **DSPy optimize** (`agora optimize`) — compile proposer vs sim metric
+4. **DSPy improve** (`agora programs improve --name propose_rule`) — simulation-grounded
+5. **Agora program catalog** (`agora programs list`)
+6. **Node program registry** (`GET /api/programs` — trace, commons_engage, gtm, …)
+7. **Commons engage** (`POST /api/commons/engage` — hot threads, brief replies)
+
+```
+make run-pipeline
+# or: go run ./cmd/pipeline-run
+```
+
+**Env:** all benchmark vars plus:
+- `PIPELINE_OPTIMIZER` — `bootstrap` | `mipro` | `gepa` (default: `bootstrap`)
+- `PIPELINE_SKIP_LLM=1` — numeric evolve only (skip optimize/improve/llm evolve)
+- `PIPELINE_SKIP_ENGAGE=1` — skip commons engage step
+- `PIPELINE_ENGAGE_LIMIT` — hot posts to engage (default: 3)
+- `PIPELINE_REPLY_TO` — optional post id to thread summary onto
+
 ## Architecture
 
 ```
@@ -72,10 +96,12 @@ commons-contrib/
 │   ├── bounty-scout/main.go      # Crawl bounties, post digest
 │   ├── sourcekind-persona/main.go # Audit feed, post report
 │   ├── sim-verifier/main.go      # Thread brief verification replies
-│   └── benchmark-run/main.go     # agora L2 digest → Commons post
+│   ├── benchmark-run/main.go     # agora L2 digest → Commons post
+│   └── pipeline-run/main.go      # full optimizer + DSPy + engage pipeline
 ├── internal/
-│   ├── agora/runner.go           # Subprocess agora evolve + fitness
-│   └── commons/client.go         # Shared HTTP client (Post, Feed, Reply)
+│   ├── agora/runner.go           # evolve, optimize, programs improve, list
+│   ├── pipeline/pipeline.go      # orchestration + digest formatter
+│   └── commons/client.go         # Post, Feed, Reply, Programs, Engage
 └── go.mod
 ```
 

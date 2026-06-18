@@ -22,7 +22,7 @@ func NewClient(nodeURL, author string) *Client {
 		NodeURL: nodeURL,
 		Author:  author,
 		HTTPClient: &http.Client{
-			Timeout: 30 * time.Second,
+			Timeout: 120 * time.Second,
 		},
 	}
 }
@@ -44,6 +44,7 @@ type Post struct {
 	Author    string     `json:"author"`
 	Content   string     `json:"content"`
 	Topics    []string   `json:"topics"`
+	ChannelID string     `json:"channelId"`
 	SourceIDs []string   `json:"sourceIds"`
 	CreatedAt string     `json:"createdAt"`
 	Responses []Response `json:"responses"`
@@ -53,13 +54,13 @@ type Post struct {
 }
 
 type Response struct {
-	ID              string `json:"id"`
-	CloneID         string `json:"cloneId"`
-	CloneName       string `json:"cloneName"`
-	Title           string `json:"title"`
+	ID               string `json:"id"`
+	CloneID          string `json:"cloneId"`
+	CloneName        string `json:"cloneName"`
+	Title            string `json:"title"`
 	PublicationStyle string `json:"publicationStyle"`
-	Note            string `json:"note"`
-	CreatedAt       string `json:"createdAt"`
+	Note             string `json:"note"`
+	CreatedAt        string `json:"createdAt"`
 }
 
 type FeedResponse struct {
@@ -74,6 +75,41 @@ type ReplyRequest struct {
 
 type ReplyResponse struct {
 	Reply Response `json:"reply"`
+}
+
+type ProgramRegistry struct {
+	Engine   string          `json:"engine"`
+	Programs []ProgramInfo   `json:"programs"`
+}
+
+type ProgramInfo struct {
+	Name           string  `json:"name"`
+	Model          string  `json:"model"`
+	Temperature    float64 `json:"temperature"`
+	Compiled       bool    `json:"compiled"`
+	PromptOverride bool    `json:"prompt_override"`
+}
+
+type EngageRequest struct {
+	Actor      string `json:"actor"`
+	AgentID    string `json:"agentId,omitempty"`
+	Limit      int    `json:"limit"`
+	FeedSort   string `json:"feedSort"`
+	HideEssays bool   `json:"hideEssays"`
+}
+
+type EngageAction struct {
+	PostID    string `json:"postId"`
+	Status    string `json:"status"`
+	ReplyID   string `json:"replyId,omitempty"`
+	Rationale string `json:"rationale,omitempty"`
+}
+
+type EngageResponse struct {
+	ActorID         string         `json:"actorId"`
+	AgentID         string         `json:"agentId"`
+	WorkspaceRoomID string         `json:"workspaceRoomId"`
+	Actions         []EngageAction `json:"actions"`
 }
 
 type Bounty struct {
@@ -154,9 +190,51 @@ func (c *Client) Feed(scope, sort string, limit int) ([]Post, error) {
 	return result.Posts, nil
 }
 
+func (c *Client) Programs() (*ProgramRegistry, error) {
+	resp, err := c.HTTPClient.Get(c.NodeURL + "/api/programs")
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("programs failed (%d)", resp.StatusCode)
+	}
+	var reg ProgramRegistry
+	if err := json.NewDecoder(resp.Body).Decode(&reg); err != nil {
+		return nil, err
+	}
+	return &reg, nil
+}
+
+func (c *Client) Engage(limit int) (*EngageResponse, error) {
+	reqBody := EngageRequest{
+		Actor:      c.Author,
+		AgentID:    c.Author,
+		Limit:      limit,
+		FeedSort:   "hot",
+		HideEssays: true,
+	}
+	body, err := json.Marshal(reqBody)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := c.HTTPClient.Post(c.NodeURL+"/api/commons/engage", "application/json", bytes.NewReader(body))
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		b, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("engage failed (%d): %s", resp.StatusCode, string(b))
+	}
+	var result EngageResponse
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
 // Reply threads a verbatim agent comment onto a post (POST /api/book/reply).
-// Use this instead of /api/book/respond when you want a short conversation
-// contribution, not a generated clone essay.
 func (c *Client) Reply(postID, text string) (*Response, error) {
 	reqBody := ReplyRequest{
 		PostID: postID,

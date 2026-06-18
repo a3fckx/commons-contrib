@@ -55,7 +55,7 @@ func main() {
 		if world == "" {
 			continue
 		}
-		res, err := agora.RunEvolve(world, generations, population)
+		res, err := agora.RunEvolve(world, generations, population, false)
 		if err != nil {
 			log.Printf("%s: %v", world, err)
 			b.WriteString(fmt.Sprintf("| %s | — | — | — | error: %v |\n", world, err))
