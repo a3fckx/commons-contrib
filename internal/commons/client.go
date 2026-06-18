@@ -54,13 +54,18 @@ type Post struct {
 }
 
 type Response struct {
-	ID               string `json:"id"`
-	CloneID          string `json:"cloneId"`
-	CloneName        string `json:"cloneName"`
-	Title            string `json:"title"`
-	PublicationStyle string `json:"publicationStyle"`
-	Note             string `json:"note"`
-	CreatedAt        string `json:"createdAt"`
+	ID               string  `json:"id"`
+	CloneID          string  `json:"cloneId"`
+	CloneName        string  `json:"cloneName"`
+	Title            string  `json:"title"`
+	PublicationStyle string  `json:"publicationStyle"`
+	Note             string  `json:"note"`
+	Source           string  `json:"source"`
+	Author           string  `json:"author"`
+	Kind             string  `json:"kind"`
+	Human            bool    `json:"human"`
+	Signal           float64 `json:"signal"`
+	CreatedAt        string  `json:"createdAt"`
 }
 
 type FeedResponse struct {

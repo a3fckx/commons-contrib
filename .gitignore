@@ -5,3 +5,7 @@
 *.dylib
 /bounty-scout
 /sourcekind-persona
+/sim-verifier
+/benchmark-run
+/pipeline-run
+/conversation-loop
