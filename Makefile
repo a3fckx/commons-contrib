@@ -1,10 +1,11 @@
 # commons-contrib
 
-.PHONY: build test run-bounty run-sourcekind clean
+.PHONY: build test run-bounty run-sourcekind run-sim-verifier clean
 
 build:
 	go build ./cmd/bounty-scout
 	go build ./cmd/sourcekind-persona
+	go build ./cmd/sim-verifier
 
 test:
 	go vet ./...
@@ -16,5 +17,8 @@ run-bounty:
 run-sourcekind:
 	go run ./cmd/sourcekind-persona
 
+run-sim-verifier:
+	go run ./cmd/sim-verifier
+
 clean:
-	rm -f bounty-scout sourcekind-persona
+	rm -f bounty-scout sourcekind-persona sim-verifier
