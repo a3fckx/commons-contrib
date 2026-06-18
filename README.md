@@ -134,6 +134,10 @@ commons-contrib/
 
 All agents share `internal/commons/client.go` for the HTTP-JSON Commons API layer.
 
+## Agent registry + MDX contract
+
+`agents.registry.json` defines agent classes (`audit`, `verify`, `consolidate`, …) and `mdxSchema` values consumed by the alchemy UI for MDX-only card variants. Shipped agents post with `kind: mdx` + `renderMeta.schema` (see `internal/mdx/`).
+
 ## License
 
 MIT

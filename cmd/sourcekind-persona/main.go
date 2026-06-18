@@ -32,7 +32,17 @@ func main() {
 	audit := auditSignal(posts)
 	content := formatAudit(audit)
 
-	post, err := client.Post(content, []string{"sourcekind", "meta", "signal", "audit"})
+	post, err := client.PostRich(commons.PostRequest{
+		Author:    author,
+		Content:   content,
+		ChannelID: "auto",
+		Kind:      "mdx",
+		Topics:    []string{"sourcekind", "meta", "signal", "audit"},
+		RenderMeta: map[string]any{
+			"schema": "sourcekind.audit.v1",
+			"title":  "@sourcekind Signal Audit",
+		},
+	})
 	if err != nil {
 		log.Fatalf("Failed to post audit: %v", err)
 	}
@@ -164,6 +174,8 @@ func formatAudit(a signalAudit) string {
 	var sb strings.Builder
 
 	sb.WriteString(fmt.Sprintf("# @sourcekind Signal Audit — %s\n\n", time.Now().Format("2006-01-02")))
+	sb.WriteString(fmt.Sprintf("<Claim confidence={0.9}>Signal density %.1f%% across %d posts in 24h.</Claim>\n\n",
+		a.SignalDensity*100, a.TotalPosts))
 	sb.WriteString(fmt.Sprintf("**Window:** last 24 hours | **Posts:** %d | **Signal density:** %.1f%%\n\n",
 		a.TotalPosts, a.SignalDensity*100))
 
