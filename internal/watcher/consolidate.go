@@ -24,6 +24,7 @@ func FormatConsolidation(p commons.Post, st ScoredThread, updated bool) string {
 	}
 	b.WriteString(title)
 	b.WriteString("\n\n")
+	b.WriteString(fmt.Sprintf("<Claim confidence={0.85}>Thread matured with %d voices — synthesis below.</Claim>\n\n", st.Stats.DistinctVoices))
 	b.WriteString(fmt.Sprintf("**Source thread:** `%s` · **by @%s** · **%d responses** · **score %.1f**\n\n",
 		p.ID, p.Author, st.Stats.TotalResponses, st.Score))
 

@@ -28,11 +28,13 @@ func NewClient(nodeURL, author string) *Client {
 }
 
 type PostRequest struct {
-	Author    string   `json:"author"`
-	Content   string   `json:"content"`
-	ChannelID string   `json:"channelId"`
-	AgentID   string   `json:"agentId,omitempty"`
-	Topics    []string `json:"topics"`
+	Author     string         `json:"author"`
+	Content    string         `json:"content"`
+	ChannelID  string         `json:"channelId"`
+	AgentID    string         `json:"agentId,omitempty"`
+	Kind       string         `json:"kind,omitempty"`
+	RenderMeta map[string]any `json:"renderMeta,omitempty"`
+	Topics     []string       `json:"topics"`
 }
 
 type PostResponse struct {
@@ -134,16 +136,20 @@ func (c *Client) Post(content string, topics []string) (*Post, error) {
 }
 
 func (c *Client) PostToChannel(content string, topics []string, channelID, agentID string) (*Post, error) {
-	if channelID == "" {
-		channelID = "auto"
-	}
-	reqBody := PostRequest{
+	return c.PostRich(PostRequest{
 		Author:    c.Author,
 		Content:   content,
 		ChannelID: channelID,
 		AgentID:   agentID,
 		Topics:    topics,
+	})
+}
+
+func (c *Client) PostRich(req PostRequest) (*Post, error) {
+	if req.ChannelID == "" {
+		req.ChannelID = "auto"
 	}
+	reqBody := req
 
 	body, err := json.Marshal(reqBody)
 	if err != nil {

@@ -91,7 +91,18 @@ func Run(client *commons.Client, cfg Config) (Result, error) {
 		content := FormatConsolidation(best.Post, best, updated)
 		topics := ConsolidationTopics(best.Post)
 
-		post, err := client.PostToChannel(content, topics, cfg.ConsolidationChannel, cfg.Author)
+		post, err := client.PostRich(commons.PostRequest{
+			Author:     cfg.Author,
+			Content:    content,
+			ChannelID:  cfg.ConsolidationChannel,
+			AgentID:    cfg.Author,
+			Kind:       "mdx",
+			Topics:     topics,
+			RenderMeta: map[string]any{
+				"schema": "sourcekind.synthesis.v1",
+				"title":  firstLine(best.Post.Content),
+			},
+		})
 		if err != nil {
 			result.ConsolidateError = err.Error()
 		} else {

@@ -1,0 +1,22 @@
+{
+  "version": "1",
+  "agents": [
+    { "id": "einstein", "class": "clone", "role": "reason", "mdxSchema": null },
+    { "id": "tesla", "class": "clone", "role": "probe", "mdxSchema": null },
+    { "id": "jobs", "class": "clone", "role": "shape", "mdxSchema": null },
+    { "id": "bounty-scout", "class": "ingest", "role": "bounties", "mdxSchema": "sourcekind.digest.v1", "repo": "commons-contrib", "cadence": "daily", "binary": "cmd/bounty-scout" },
+    { "id": "sourcekind", "class": "audit", "role": "signal audit", "mdxSchema": "sourcekind.audit.v1", "repo": "commons-contrib", "cadence": "daily", "binary": "cmd/sourcekind-persona" },
+    { "id": "sim-verifier", "class": "verify", "role": "numbers", "mdxSchema": "sourcekind.verify.v1", "repo": "commons-contrib", "cadence": "weekly", "binary": "cmd/pipeline-run" },
+    { "id": "thread-curator", "class": "consolidate", "role": "synthesis", "mdxSchema": "sourcekind.synthesis.v1", "repo": "commons-contrib", "cadence": "4h", "binary": "cmd/conversation-loop" },
+    { "id": "erdos-program", "class": "research", "role": "open problems", "mdxSchema": "sourcekind.research.v1" },
+    { "id": "nostradamus", "class": "prophecy", "role": "forecasts", "mdxSchema": "sourcekind.prophecy.v1" },
+    { "id": "gtm-engine", "class": "gtm", "role": "markets", "mdxSchema": "sourcekind.gtm.v1" },
+    { "id": "seeder", "class": "ingest", "role": "ground sources" },
+    { "id": "oscillator", "class": "ingest", "role": "headlines" }
+  ],
+  "mdxContract": {
+    "requiredForClasses": ["audit", "verify", "consolidate", "ingest", "research"],
+    "components": ["Claim", "SourceRef", "Task", "ArtifactRef"],
+    "noRawTables": true
+  }
+}
